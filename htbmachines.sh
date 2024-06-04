@@ -278,7 +278,7 @@ function search_machine_os_difficulty(){
     fi
 
     # search machines by OS and dificulty
-    machines_os_difficulty=$(cat bundle.js | grep "so: \"${os}\"" -B 6 | grep "dificultad: \"${difficulty}\"" -B 5 | grep "name: " | sed -E "s/\"|,//g" | awk '{print $NF}')
+    machines_os_difficulty=$(cat bundle.js | grep "dificultad: \"${difficulty}\"" -B 6| grep "so: \"${os}\"" -B 6 | grep "name: " | sed -E "s/\"|,//g" | awk '{print $NF}')
 
     # check if there are machines with the specified OS and dificulty
     if [ -z "$machines_os_difficulty" ]; then
@@ -288,6 +288,7 @@ function search_machine_os_difficulty(){
 
     # print machines with the specified OS and dificulty
     echo -e "${GRAY}Máquinas con OS ${NC}${PURPLE}${os}${NC}${GRAY} y dificultad ${NC}${PURPLE}${difficulty}${NC}${GRAY}:${NC}\n"
+    echo -e "${WHITE}${machines_os_difficulty}${NC}"
 }
 
 search_machine_os_flag=false
