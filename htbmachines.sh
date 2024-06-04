@@ -32,6 +32,7 @@ function help(){
     echo -e "${YELLOW} -i${NC} ${TURQUOISE}<ip de la máquina>${NC}  Buscar máquina por ip\n"
     echo -e "${YELLOW} -d${NC} ${TURQUOISE}<dificultad>${NC}  Buscar máquinas por dificultad\n"
     echo -e "${YELLOW} -o${NC} ${TURQUOISE}<OS>${NC}  Buscar máquinas por OS\n"
+    echo -e "${YELLOW} -s${NC} ${TURQUOISE}<skill>${NC}  Buscar máquinas por skill\n"
     echo -e "${YELLOW} -l${NC} ${TURQUOISE}<nombre de la máquina>${NC}  Obtener link de youtube de la máquina\n"
     echo -e "${YELLOW} -u${NC}  Actualizar máquinas\n"
     echo -e "${YELLOW} -h${NC}  Mostrar este mensaje\n"
@@ -291,16 +292,41 @@ function search_machine_os_difficulty(){
     echo -e "${WHITE}${machines_os_difficulty}${NC}"
 }
 
+function search_machine_skill() {
+    skill=$1
+
+    # check if the data is downloaded
+    if [ ! -f bundle.js ]; then
+        echo -e "\n${RED}No hay máquinas descargadas${NC}\n"
+        echo -e "${YELLOW}Descargue las máquinas con:${NC} ${PURPLE}htbmachines.sh -u${NC}\n"
+        exit 1
+    fi
+
+    # search machines by skill
+    machines_skill=$(cat bundle.js | grep "skills: " -B 6 | grep -i "${skill}" -B 6 | grep "name: " | sed -E "s/\"|,//g" | awk '{print $NF}')
+
+    # check if there are machines with the specified skill
+    if [ -z "$machines_skill" ]; then
+        echo -e "\n${RED}No hay máquinas con skill ${NC}${PURPLE}${skill}${NC}\n"
+        exit 1
+    fi
+
+    # print machines with the specified skill
+    echo -e "${GRAY}Máquinas con skill ${NC}${PURPLE}${skill}${NC}${GRAY}:${NC}\n"
+    echo -e "${WHITE}${machines_skill}${NC}"
+}
+
 search_machine_os_flag=false
 search_machines_dificulty_flag=false
 
 # menu
-while getopts "hm:ui:d:l:o:" arg; do
+while getopts "hm:ui:d:l:o:s:" arg; do
     case $arg in
         m) search_machine_name $OPTARG;;
         u) update_machines;;
         o) search_machine_os_flag=true;machine_os=$OPTARG;;
         i) search_machine_ip $OPTARG;;
+        s) search_machine_skill "$OPTARG";;
         d) search_machines_dificulty_flag=true;machine_difficulty=$OPTARG;;
         l) get_yt_link $OPTARG;;
         h | *) help;;
